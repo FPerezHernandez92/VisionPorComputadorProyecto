@@ -14,9 +14,12 @@
 using namespace std;
 using namespace cv;
 
+bool pintar_imagenes = true;
+
 /*************************************************/
 /*************** Funciones auxiliares ************/
 /*************************************************/
+void pintaI(Mat im, char ventana[]);
 
 /* Función para leer imágenes */
 vector<Mat> LeerImagenes(int numero_imagenes, string nombre_imagenes, int flag_color){
@@ -24,6 +27,10 @@ vector<Mat> LeerImagenes(int numero_imagenes, string nombre_imagenes, int flag_c
 	for (int i = 1; i <= numero_imagenes; i++){
 		string aux_nombre = nombre_imagenes + to_string(i) + ".jpg";
 		Mat aux_imagen = imread(aux_nombre, flag_color);
+
+		if (pintar_imagenes)
+			pintaI(aux_imagen, "Imagen original");
+
 		imagenes.push_back(aux_imagen);
 		if (i >= 9){
 			nombre_imagenes = "imagenes/image_00";
@@ -36,13 +43,17 @@ vector<Mat> LeerImagenes(int numero_imagenes, string nombre_imagenes, int flag_c
 }
 
 /* Función para pintar imágenes */
-void PintaImagenes(vector<Mat> imagenes_caras, string nombre_imagenes="Salida"){
+void PintaImagenes(vector<Mat> imagenes_caras, string nombre_imagenes = "Salida", bool escribir_imagen_salida=false){
 	for (int i = 0; i < imagenes_caras.size(); i++){
 		string aux_nombre = nombre_imagenes + to_string(i);
-		namedWindow(aux_nombre, imagenes_caras[i].channels());
-		imshow(aux_nombre, imagenes_caras[i]);
-		cvWaitKey();
-		destroyWindow(aux_nombre);
+		if (escribir_imagen_salida)
+			imwrite("salida/" + to_string(i) + ".jpg", imagenes_caras[i]);
+		else {
+			namedWindow(aux_nombre, imagenes_caras[i].channels());
+			imshow(aux_nombre, imagenes_caras[i]);
+			cvWaitKey();
+			destroyWindow(aux_nombre);
+		}
 	}
 }
 
@@ -104,16 +115,18 @@ Mat PasarANegro(Mat imagen, int tolerancia=70){
 
 /* Función que coge una imagen de un vector dado y la transforma
 a blanco-negro según la función definida anteriormente */
-vector<Mat> DetectarRosa(vector<Mat> imagenes, int tolerancia){
+vector<Mat> DetectarRosa(vector<Mat> imagenes, int tolerancia, int num){
 	vector<Mat> imagenes_salida;
-	for (int i = 0; i < imagenes.size(); i++){
+	for (int i = 0; i < num; i++){
+		//int aux = rand() % imagenes.size();
 		Mat salida;
 		salida = PasarANegro(imagenes[i], tolerancia);
 		imagenes_salida.push_back(salida);
 	}
 
 	//Pintamos las imágenes que vamos a usar para las pruebas
-	PintaImagenes(imagenes_salida);
+	if (pintar_imagenes)
+		PintaImagenes(imagenes_salida,"Color carne a blanco-negro");
 
 	return imagenes_salida;
 }
@@ -162,6 +175,8 @@ Mat RGBtoYCrCb(Mat im_original){
 Mat TransformarDeRGBaYCrCBYPasoABlancoNegro(Mat im, int valY, int minCr, int maxCr, int minCb, int maxCb){
 	//Paso de RGB a YCrCb
 	Mat salida = RGBtoYCrCb(im);
+	if (pintar_imagenes)
+		pintaI(salida, "YCrCb");
 
 	//Pinto en blanco los niveles de piel y en negro no piel.
 	for (int i = 0; i < salida.rows; i++){
@@ -471,7 +486,6 @@ void BuscarOjos2(Mat imagen){
 	}
 }
 
-
 int main(){
 	//Leemos las imágenes que vamos a usar para las pruebas
 	int numero_imagenes;
@@ -480,17 +494,20 @@ int main(){
 	int flag_color = CV_32FC3;
 
 	//Leemos las imágenes sacadas de una base de datos
-	numero_imagenes = 70;
+	numero_imagenes = 5;
 	nombre_imagenes = "imagenes/image_000";
+	cout << "-------------------------> Leyendo imagenes: " << endl;
 	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
 
-	//2. Pasar de Color Carne a Negro
+	//2. Pasar de Color Carne a Blanco-Negro
 	int tolerancia;
 	tolerancia = 70;
 	vector<Mat> imagenes_sin_color_carne;
-	//imagenes_sin_color_carne = DetectarRosa(imagenes_caras,tolerancia);
+	int num_imagenes = numero_imagenes; //Número de imágenes para mostrar
+	cout << "-------------------------> Pasando de color carne a blanco-negro: " << endl;
+	imagenes_sin_color_carne = DetectarRosa(imagenes_caras,tolerancia,num_imagenes);
 
-
+	
 	//3. Sacar piel de las imágenes
 
 	//3.1 Sacar piel
@@ -512,8 +529,10 @@ int main(){
 	//Busco la zona cuadrada de piel en cada imagen 
 	for (int i = 0; i < numero_imagenes; i++){
 		//Pasamos las imágenes de RGB a YCrCb y después a Blanco-Negro
+		if (i==0) cout << "-------------------------> Pasando de RGB a YCrCb: " << endl;
 		Mat aux = TransformarDeRGBaYCrCBYPasoABlancoNegro(imagenes_caras[i], 110, 80, 130, 145, 180);
-		if (BuscarSiHayCara(aux)){
+		if (pintar_imagenes) pintaI(aux, "YCrCb a blanco-negro");
+		/*if (BuscarSiHayCara(aux)){
 
 			//3.2 Recortar piel
 			//Si hay cara pasamos a recortarla
@@ -539,6 +558,7 @@ int main(){
 			imagenes_gaussianas.push_back(imgaus5);
 			pintaI(imagenes_gaussianas[contador], " gaussiano");
 			*/
+		/*
 			contador++;
 		}
 		else{
@@ -546,9 +566,9 @@ int main(){
 			imagenes_caras_malas.push_back(malas);
 			cout << "\nImagen " << i << " No se reconoce cara";
 			//pintaI(aux, "No se reconoce la cara.");
-		}
+		}*/
 	}
 
-
+	
 	system("pause");
 }
