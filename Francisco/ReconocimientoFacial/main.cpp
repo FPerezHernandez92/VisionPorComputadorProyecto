@@ -14,7 +14,7 @@
 using namespace std;
 using namespace cv;
 
-bool pintar_imagenes = true;
+bool pintar_imagenes = false;
 
 /*************************************************/
 /*************** Funciones auxiliares ************/
@@ -486,6 +486,16 @@ void BuscarOjos2(Mat imagen){
 	}
 }
 
+//2. Pasar de Color Carne a Blanco-Negro
+void PasarDeColorCarneABlancoNegro(int tolerancia, int numero_imagenes, vector<Mat> imagenes_caras){
+	vector<Mat> imagenes_sin_color_carne;
+	int num_imagenes = numero_imagenes; //Número de imágenes para mostrar
+	cout << "-------------------------> Pasando de color carne a blanco-negro: " << endl;
+	imagenes_sin_color_carne = DetectarRosa(imagenes_caras, tolerancia, num_imagenes);
+	//Para evitar problemas de memoria voy vaciando lo que no nos servirá en un futuro
+	imagenes_sin_color_carne.clear();
+}
+
 int main(){
 	//Leemos las imágenes que vamos a usar para las pruebas
 	int numero_imagenes;
@@ -494,7 +504,7 @@ int main(){
 	int flag_color = CV_32FC3;
 
 	//Leemos las imágenes sacadas de una base de datos
-	numero_imagenes = 5;
+	numero_imagenes = 452;
 	nombre_imagenes = "imagenes/image_000";
 	cout << "-------------------------> Leyendo imagenes: " << endl;
 	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
@@ -502,72 +512,64 @@ int main(){
 	//2. Pasar de Color Carne a Blanco-Negro
 	int tolerancia;
 	tolerancia = 70;
-	vector<Mat> imagenes_sin_color_carne;
-	int num_imagenes = numero_imagenes; //Número de imágenes para mostrar
-	cout << "-------------------------> Pasando de color carne a blanco-negro: " << endl;
-	imagenes_sin_color_carne = DetectarRosa(imagenes_caras,tolerancia,num_imagenes);
-
+	//PasarDeColorCarneABlancoNegro(tolerancia, numero_imagenes, imagenes_caras);
 	
 	//3. Sacar piel de las imágenes
-
 	//3.1 Sacar piel
 	vector<Mat> imagenes_salida;
-	vector<Mat> imagenes_bnYCrCb;
 	int contador = 0;
 	//Para las imagenes que no reconocen cara
 	vector<Mat> imagenes_caras_malas;
-	vector<Mat> imagenes_salida_malas;
-	vector<Mat> imagenes_bnYCrCb_malas;
-
-	vector<Mat> imagenes_recortadas;
+	vector<Mat> imagenes_color_recortadas;
 	vector<Mat> imagenes_gaussianas;
+	int primero_filas = 0, ultimo_filas = 0, primero_col = 0, ultimo_col = 0;
+	vector<Mat> auxaux;
 
-	int primero_filas = 0;
-	int ultimo_filas = 0;
-	int primero_col = 0;
-	int ultimo_col = 0;
+	int contadormalas = 0;
+
 	//Busco la zona cuadrada de piel en cada imagen 
 	for (int i = 0; i < numero_imagenes; i++){
 		//Pasamos las imágenes de RGB a YCrCb y después a Blanco-Negro
-		if (i==0) cout << "-------------------------> Pasando de RGB a YCrCb: " << endl;
+		if (i==0) cout << "-------------------------> Pasando de RGB a YCrCb y a Blanco-Negro: " << endl << "Total de imágenes: " << numero_imagenes << endl;
+		cout << " " << i;
+
 		Mat aux = TransformarDeRGBaYCrCBYPasoABlancoNegro(imagenes_caras[i], 110, 80, 130, 145, 180);
 		if (pintar_imagenes) pintaI(aux, "YCrCb a blanco-negro");
-		/*if (BuscarSiHayCara(aux)){
-
+		if (BuscarSiHayCara(aux)){
 			//3.2 Recortar piel
 			//Si hay cara pasamos a recortarla
-			imagenes_bnYCrCb.push_back(aux);
 			Mat salida = recortoCaraFILAS(aux, primero_filas, ultimo_filas);
 			salida = recortoCaraCOL(salida, primero_col, ultimo_col);
 			imagenes_salida.push_back(salida);
 
 			//3.3 Buscar ojos en una cara
-			cout << "\nImagen " << i;
 			//salida = BuscarOjos(salida);
-			BuscarOjos2(salida);
+			//BuscarOjos2(salida);
 
-			//pintaI(imagenes_bnYCrCb[contador], "b/n piel");
-			pintaI(imagenes_salida[contador], "recortada");
+			if (pintar_imagenes) pintaI(imagenes_salida[contador], "Recortada");
 
-			Mat recortada = RecortarImagen(imagenes_caras[i], primero_filas, ultimo_filas, primero_col, ultimo_col);
-			imagenes_recortadas.push_back(recortada);
-			//pintaI(imagenes_recortadas[contador], "recortada orgi");
+			//Mat color_recortada = RecortarImagen(imagenes_caras[i], primero_filas, ultimo_filas, primero_col, ultimo_col);
+			//imagenes_color_recortadas.push_back(color_recortada);
+			//pintaI(color_recortada, "ColorRecortada");
 
 			/*
-			Mat imgaus5 = frecuenciaAlta(imagenes_recortadas[contador], 3.0);
+			Mat imgaus5 = frecuenciaAlta(imagenes_color_recortadas[contador], 3.0);
 			imagenes_gaussianas.push_back(imgaus5);
 			pintaI(imagenes_gaussianas[contador], " gaussiano");
 			*/
-		/*
+		
 			contador++;
 		}
 		else{
 			Mat malas = imagenes_caras[i];
-			imagenes_caras_malas.push_back(malas);
-			cout << "\nImagen " << i << " No se reconoce cara";
+			//imagenes_caras_malas.push_back(malas);
+			//cout << "\nImagen " << i << " No se reconoce cara";
 			//pintaI(aux, "No se reconoce la cara.");
-		}*/
+			contadormalas++;
+		}
 	}
+	cout << "\nLas imagenes malas han sido un total de: " << contadormalas << endl;
+	PintaImagenes(imagenes_salida,"",true);
 
 	
 	system("pause");
