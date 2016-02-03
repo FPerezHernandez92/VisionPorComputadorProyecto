@@ -431,23 +431,24 @@ Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor){
 		for (int j = 0; j < piel_b_n.cols; j++){
 			if (piel_b_n.at<Vec3b>(i, j) == Vec3b(0, 0, 0))
 				if (ParecePupilaRGB(original_recor, i, j))
-					aux.at<Vec3b>(i, j) = Vec3b(100, 10, 100); //cambiar, esto es para probar que se reconoce bien el punto
+					aux.at<Vec3b>(i, j) = Vec3b(100, 10, 100); 
 		}
 	}
 	//Ya tengo pintado en morado la zona posible de pupila.
 	//Ahora tengo que encontradar dos zonas moradas a cierta distancia relativa
 	bool primero = false;
-	for (int i = aux.rows/2; i > 0; i--){
+	int fil = 0; 
+	int col = 0;
+	for (int  i= aux.rows/2; i > 0; i--){
 		for (int j = 0; j < aux.cols; j++){
 			if (aux.at<Vec3b>(i, j) == Vec3b(100, 10, 100) && !primero){ //punto bajo de la pupila más baja
 				primero = true;
 				//tengo que ver que efectivamente es una pupila. que tenga a derecha e izquierda algo blanco
-
-				line(aux, Point(0, i), Point(aux.cols, i), CV_RGB(0, 0, 255));
+				fil = i;
+				col = j;
 			}
 		}
 	}
-
 
 	//Zonas blancas para verificar que es ojo
 	for (int i = 0; i < piel_b_n.rows; i++){
@@ -458,8 +459,43 @@ Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor){
 		}
 	}
 
+	//Busco que en la línea que se ha encontrado como ojos, sea de verdad un ojo.
+	//Que en su entorno tenga algún pixel "ParaceBlancoOjo"	que ahora será color 10,100,10
+	bool es_bueno = false;
+	for (int k = fil - 10; (k < fil + 10) && (0<k) && (k<aux.rows); k++){
+		for (int l = col - 10; (l < col + 10) && (0<l) && (l<aux.cols); l++){
+			if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_bueno){ //hay zona blanca ojo
+				es_bueno = true;
+				line(aux, Point(0, fil), Point(aux.cols, fil), CV_RGB(0, 0, 255));
+			}
+		}
+	}
 
-
+	//Si no se han encontrado ojos en la mitad superior, buscando en la inferior haciendo busqueda de arriba a abajo
+	bool primeroabajo = false; 
+	if (!es_bueno){
+		cout << "bajo" << endl;
+		for (int i = aux.rows / 2; i < aux.rows; i++){
+			for (int j = 0; j < aux.cols; j++){
+				if (aux.at<Vec3b>(i, j) == Vec3b(100, 10, 100) && !primeroabajo){ //punto bajo de la pupila más baja
+					primeroabajo = true;
+					//tengo que ver que efectivamente es una pupila. que tenga a derecha e izquierda algo blanco
+					fil = i;
+					col = j;
+					cout << "abajo" << endl;
+				}
+			}
+		}
+		bool es_buenoabajo = false;
+		for (int k = fil - 10; (k < fil + 10) && (0 < k) && (k < aux.rows); k++){
+			for (int l = col - 10; (l < col + 10) && (0 < l) && (l < aux.cols); l++){
+				if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_buenoabajo){ //hay zona blanca ojo
+					es_buenoabajo = true;
+					line(aux, Point(0, fil), Point(aux.cols, fil), CV_RGB(0, 0, 255));
+				}
+			}
+		}
+	}
 
 
 
@@ -517,17 +553,17 @@ int main(){
 			salida = recortoCaraCOL(salida, primero_col, ultimo_col);
 			imagenes_salida.push_back(salida);
 
-			pintaI(imagenes_bnYCrCb[contador], "b/n piel");
-			pintaI(imagenes_salida[contador], "recortada");
+			//pintaI(imagenes_bnYCrCb[contador], "b/n piel");
+			//pintaI(imagenes_salida[contador], "recortada");
 
 			Mat recortada = RecortarImagen(imagenes_caras[i], primero_filas, ultimo_filas, primero_col, ultimo_col);
 			imagenes_recortadas.push_back(recortada);
-			pintaI(imagenes_recortadas[contador], "recortada orgi");
+			//pintaI(imagenes_recortadas[contador], "recortada orgi");
 
 			Mat ojos = BuscaOjosCris(salida, recortada);
 			pintaI(ojos, "ojitos");
 
-			pintaI(imagenes_recortadas[contador], "recortada orgi");
+			//pintaI(imagenes_recortadas[contador], "recortada orgi");
 
 			/*
 			Mat imgaus5 = frecuenciaAlta(imagenes_recortadas[contador], 3.0);
