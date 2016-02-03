@@ -489,6 +489,121 @@ void BuscarOjos2(Mat imagen){
 	}
 }
 
+bool ParecePupilaRGB(Mat im, int coor_x, int coor_y){
+	bool parece_negro = false;
+	double coo1 = im.at<Vec3b>(coor_x, coor_y)[0]; //R
+	double coo2 = im.at<Vec3b>(coor_x, coor_y)[1]; //G
+	double coo3 = im.at<Vec3b>(coor_x, coor_y)[2]; //B
+
+	if (coo1 < 70 && coo2 < 60 && coo3 < 70)
+		parece_negro = true;
+
+	return parece_negro;
+}
+
+bool PareceBlancoOjoRGB(Mat im, int coor_x, int coor_y){
+	bool parece_blanco = false;
+	double coo1 = im.at<Vec3b>(coor_x, coor_y)[0]; //R
+	double coo2 = im.at<Vec3b>(coor_x, coor_y)[1]; //G
+	double coo3 = im.at<Vec3b>(coor_x, coor_y)[2]; //B
+
+	if (coo1>200 && coo2>190 && coo3>190)
+		parece_blanco = true;
+
+	return parece_blanco;
+}
+
+//Le paso la imagen de piel 
+Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor, bool &encontrado){
+	Mat aux = piel_b_n;
+	for (int i = 0; i < piel_b_n.rows; i++){
+		for (int j = 0; j < piel_b_n.cols; j++){
+			if (piel_b_n.at<Vec3b>(i, j) == Vec3b(0, 0, 0))
+				if (ParecePupilaRGB(original_recor, i, j))
+					aux.at<Vec3b>(i, j) = Vec3b(100, 10, 100);
+		}
+	}
+	//Ya tengo pintado en morado la zona posible de pupila.
+	//Ahora tengo que encontradar dos zonas moradas a cierta distancia relativa
+	bool primero = false;
+	int fil = 0;
+	int col = 0;
+	for (int i = aux.rows / 2; i > 0; i--){
+		for (int j = 0; j < aux.cols; j++){
+			if (aux.at<Vec3b>(i, j) == Vec3b(100, 10, 100) && !primero){ //punto bajo de la pupila más baja
+				primero = true;
+				//tengo que ver que efectivamente es una pupila. que tenga a derecha e izquierda algo blanco
+				fil = i;
+				col = j;
+			}
+		}
+	}
+
+	//Zonas blancas para verificar que es ojo
+	for (int i = 0; i < piel_b_n.rows; i++){
+		for (int j = 0; j < piel_b_n.cols; j++){
+			if (piel_b_n.at<Vec3b>(i, j) == Vec3b(0, 0, 0))
+				if (PareceBlancoOjoRGB(original_recor, i, j))
+					aux.at<Vec3b>(i, j) = Vec3b(10, 100, 10); //pinto en verde las "zonas blancas"
+		}
+	}
+
+	//Busco que en la línea que se ha encontrado como ojos, sea de verdad un ojo.
+	//Que en su entorno tenga algún pixel "ParaceBlancoOjo"	que ahora será color 10,100,10
+	bool es_bueno = false;
+	for (int k = fil - 10; (k < fil + 10) && (0<k) && (k<aux.rows); k++){
+		for (int l = col - 10; (l < col + 10) && (0<l) && (l<aux.cols); l++){
+			if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_bueno){ //hay zona blanca ojo
+				es_bueno = true;
+				encontrado = true;
+				line(aux, Point(0, fil), Point(aux.cols, fil), CV_RGB(0, 0, 255));
+			}
+		}
+	}
+
+	//Si no se han encontrado ojos en la mitad superior, buscando en la inferior haciendo busqueda de arriba a abajo
+	bool primeroabajo = false;
+	if (!es_bueno){
+		cout << "bajo" << endl;
+		for (int i = aux.rows / 2; i < aux.rows; i++){
+			for (int j = 0; j < aux.cols; j++){
+				if (aux.at<Vec3b>(i, j) == Vec3b(100, 10, 100) && !primeroabajo){ //punto bajo de la pupila más baja
+					primeroabajo = true;
+					//tengo que ver que efectivamente es una pupila. que tenga a derecha e izquierda algo blanco
+					fil = i;
+					col = j;
+					cout << "abajo" << endl;
+				}
+			}
+		}
+		bool es_buenoabajo = false;
+		for (int k = fil - 10; (k < fil + 10) && (0 < k) && (k < aux.rows); k++){
+			for (int l = col - 10; (l < col + 10) && (0 < l) && (l < aux.cols); l++){
+				if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_buenoabajo){ //hay zona blanca ojo
+					es_buenoabajo = true;
+					encontrado = true;
+					line(aux, Point(0, fil), Point(aux.cols, fil), CV_RGB(0, 0, 255));
+				}
+			}
+		}
+	}
+
+
+
+	return aux;
+}
+
+Mat HastaEncontrarOjos(Mat piel_b_n, Mat original_recor){
+	bool encontrado = false;
+	Mat ojos = BuscaOjosCris(piel_b_n, original_recor, encontrado);
+	if (!encontrado){
+		cout << "estoy en el nuevo metodo. No he encontrado " << endl;
+		//Recorto imagen por la izquierda y la derecha unos 10 píxeles.
+
+	}
+	return ojos;
+}
+
 //2. Pasar de Color Carne a Blanco-Negro
 void PasarDeColorCarneABlancoNegro(int tolerancia, int numero_imagenes, vector<Mat> imagenes_caras){
 	vector<Mat> imagenes_sin_color_carne;
@@ -563,16 +678,22 @@ int main(){
 	Mat salidaaux;
 	for (int i = 0; i < imagenes_recortadas.size(); i++){
 		//3.3 Buscar ojos en una cara
-		BuscarOjos(imagenes_recortadas[i], contador_ojos_no_reconocidos,imagenes_ojos_identificados, imagenes_ojos_no_identificados);
+		//BuscarOjos(imagenes_recortadas[i], contador_ojos_no_reconocidos,imagenes_ojos_identificados, imagenes_ojos_no_identificados);
 		//BuscarOjos2(salida);
 	}
 	cout << "No se han reconocido ojos en un total de: " << contador_ojos_no_reconocidos << " imagenes" << endl;
 	
 	cout << "\n-------------------------> Aplicando filtro gaussiano: " << endl;
-	for (int i = 0; i < imagenes_color_recortadas.size(); i++){
+	/*for (int i = 0; i < imagenes_color_recortadas.size(); i++){
 		Mat imgaus5 = frecuenciaAlta(imagenes_color_recortadas[i], 3.0);
 		imagenes_gaussianas.push_back(imgaus5);
-		pintaI(imagenes_gaussianas[i], " gaussiano");
+		if (pintar_imagenes) pintaI(imagenes_gaussianas[i], " gaussiano");
+	}*/
+
+	cout << "\n-------------------------> CRIS:Reconocer ojos: " << endl;
+	for (int i = 0; i < imagenes_recortadas.size(); i++){
+		Mat ojos = HastaEncontrarOjos(imagenes_recortadas[i], imagenes_color_recortadas[i]);
+		pintaI(ojos, "ojitos");
 	}
 
 	cout << endl << endl;
