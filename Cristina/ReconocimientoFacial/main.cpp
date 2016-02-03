@@ -335,7 +335,6 @@ Mat recortoCaraCOL(Mat im, int &primeroc, int &ultimoc){
 }
 
 
-
 Mat RecortarImagen(Mat im, int primero_filas, int ultimo_filas, int primero_col, int ultimo_col){
 	Mat aux1 = Mat(ultimo_filas - primero_filas, im.cols, CV_8UC3);
 	for (int i = primero_filas; i < ultimo_filas; i++){
@@ -593,14 +592,34 @@ Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor, bool &encontrado){
 	return aux;
 }
 
-Mat HastaEncontrarOjos(Mat piel_b_n, Mat original_recor){
+Mat HastaEncontrarOjos(Mat piel_b_n, Mat original_recor, int &ojos_encontrados){
 	bool encontrado = false;
 	Mat ojos = BuscaOjosCris(piel_b_n, original_recor, encontrado);
 	if (!encontrado){
+		Mat recortada_b_n;
+		Mat recortada_orig;
+		piel_b_n.copyTo(recortada_b_n);
+		original_recor.copyTo(recortada_orig);
 		cout << "estoy en el nuevo metodo. No he encontrado " << endl;
 		//Recorto imagen por la izquierda y la derecha unos 10 píxeles.
+		int colum = piel_b_n.cols;
+		int primera_colum = 10;
+		int ultima_colum = colum -10;
+		int contador_while = 0;
+		while (contador_while < 5 && !encontrado){
+			if ((primera_colum < colum) && (ultima_colum > 0)){
+				recortada_b_n = RecortarImagen(piel_b_n, 0, piel_b_n.rows, primera_colum, ultima_colum);
+				recortada_orig = RecortarImagen(original_recor, 0, piel_b_n.rows, primera_colum, ultima_colum);
+				ojos = BuscaOjosCris(recortada_b_n, recortada_orig, encontrado);
+				contador_while++;
+				primera_colum + 10;
+				ultima_colum - 10;
+			}
+		}
 
 	}
+	if (encontrado)
+		ojos_encontrados++;
 	return ojos;
 }
 
@@ -621,7 +640,7 @@ int main(){
 	vector<Mat> imagenes_caras;
 
 	//Leemos las imágenes sacadas de una base de datos
-	numero_imagenes = 15;
+	numero_imagenes = 90;
 	nombre_imagenes = "imagenes/image_000";
 	cout << "-------------------------> Leyendo imagenes: " << endl;
 	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
@@ -691,10 +710,13 @@ int main(){
 	}*/
 
 	cout << "\n-------------------------> CRIS:Reconocer ojos: " << endl;
+	int ojos_encontrados = 0;
 	for (int i = 0; i < imagenes_recortadas.size(); i++){
-		Mat ojos = HastaEncontrarOjos(imagenes_recortadas[i], imagenes_color_recortadas[i]);
-		pintaI(ojos, "ojitos");
+		Mat ojos = HastaEncontrarOjos(imagenes_recortadas[i], imagenes_color_recortadas[i], ojos_encontrados);
+	//	pintaI(ojos, "ojitos");
 	}
+	cout << "Se han encontrado: " << ojos_encontrados << " ojos de " << imagenes_recortadas.size() << endl;
+
 
 	cout << endl << endl;
 	system("pause");
