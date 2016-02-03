@@ -15,7 +15,7 @@ using namespace std;
 using namespace cv;
 
 bool pintar_imagenes = false;
-bool escribir_imagen = true;
+bool escribir_imagen = false;
 int cont = 0;
 
 /*************************************************/
@@ -618,7 +618,7 @@ Mat HastaEncontrarOjos(Mat imagen_cara, Mat piel_b_n, Mat original_recor, int &o
 		int ultima_colum = colum - 10;
 		int contador_while = 0;
 		while (contador_while < 5 && !encontrado){
-			if ((primera_colum < colum) && (ultima_colum > 0)){
+			if ((primera_colum < colum) && (ultima_colum > 0) && (primera_colum < ultima_colum)){
 				recortada_b_n = RecortarImagen(piel_b_n, 0, piel_b_n.rows, primera_colum, ultima_colum);
 				recortada_orig = RecortarImagen(original_recor, 0, piel_b_n.rows, primera_colum, ultima_colum);
 				ojos = BuscaOjos2(imagen_cara, recortada_b_n, recortada_orig, encontrado, filas_recortadas_arriba, col_recortadas_izquierda);
