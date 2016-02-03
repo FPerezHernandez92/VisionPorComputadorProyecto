@@ -554,8 +554,8 @@ Mat BuscaOjos2(Mat imagen_cara, Mat piel_b_n, Mat original_recor, bool &encontra
 	//Busco que en la línea que se ha encontrado como ojos, sea de verdad un ojo.
 	//Que en su entorno tenga algún pixel "ParaceBlancoOjo"	que ahora será color 10,100,10
 	bool es_bueno = false;
-	for (int k = fil - 10; (k < fil + 10) && (0<k) && (k<aux.rows); k++){
-		for (int l = col - 10; (l < col + 10) && (0<l) && (l<aux.cols); l++){
+	for (int k = fil - 20; (k < fil + 20) && (0<k) && (k<aux.rows); k++){
+		for (int l = col - 20; (l < col + 20) && (0<l) && (l<aux.cols); l++){
 			if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_bueno){ //hay zona blanca ojo
 				es_bueno = true;
 				encontrado = true;
@@ -580,8 +580,8 @@ Mat BuscaOjos2(Mat imagen_cara, Mat piel_b_n, Mat original_recor, bool &encontra
 			}
 		}
 		bool es_buenoabajo = false;
-		for (int k = fil - 10; (k < fil + 10) && (0 < k) && (k < aux.rows); k++){
-			for (int l = col - 10; (l < col + 10) && (0 < l) && (l < aux.cols); l++){
+		for (int k = fil - 20; (k < fil + 20) && (0 < k) && (k < aux.rows); k++){
+			for (int l = col - 20; (l < col + 20) && (0 < l) && (l < aux.cols); l++){
 				if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_buenoabajo){ //hay zona blanca ojo
 					es_buenoabajo = true;
 					encontrado = true;
@@ -593,7 +593,7 @@ Mat BuscaOjos2(Mat imagen_cara, Mat piel_b_n, Mat original_recor, bool &encontra
 		}
 	}
 
-	if (pintar_imagenes) pintaI(aux, "Segundo buscador de ojos");
+    pintaI(aux, "Segundo buscador de ojos");
 
 	return imagen_cara;
 }
@@ -733,7 +733,7 @@ void SegundoBuscadorDeOjos(vector<Mat> imagenes_caras_buenas, vector<Mat> imagen
 		cout << " " << i;
 		Mat ojos = HastaEncontrarOjos(imagenes_caras_buenas[i], imagenes_recortadas[i], imagenes_color_recortadas[i], ojos_encontrados,
 			filas_recortadas_arriba[i], col_recortadas_izquierda[i]);
-		if (pintar_imagenes) pintaI(ojos, "Final");
+	    pintaI(ojos, "Final");
 	}
 	double porcentaje = (ojos_encontrados / (imagenes_recortadas.size()*1.0)) * 100;
 	cout << "\n\nSe han encontrado: " << ojos_encontrados << " ojos de " << imagenes_recortadas.size() << " ,un porcentaje de: " << porcentaje << "% de acierto" << endl;
@@ -763,12 +763,12 @@ int main(){
 	SacarPielYRecortarPiel(imagenes_caras, imagenes_caras_buenas, imagenes_recortadas, imagenes_color_recortadas, filas_recortadas_arriba, col_recortadas_izquierda);
 
 	//3.3 Vamos a pasar a aplicar el primer buscar de ojos que hemos realizado
-	PrimerBuscadorDeOjos(imagenes_recortadas);
+	//PrimerBuscadorDeOjos(imagenes_recortadas);
 
 	//BuscarOjos3(salida);
 
 	//4. Filtro Gaussiano
-	AplicarFiltroGaussiano(imagenes_color_recortadas);
+	//AplicarFiltroGaussiano(imagenes_color_recortadas);
 
 
 	//En imagenes_caras_buenas tengo las imagenes que se han reconocido como que tienen cara.
