@@ -57,6 +57,10 @@ void PintaImagenes(vector<Mat> imagenes_caras, string nombre_imagenes = "Salida"
 	}
 }
 
+void otropintaI(Mat im, char ventana[], int i){
+	imwrite("salida/" + to_string(i) + "Gaus.jpg", im);
+}
+
 /* Función para pintar una imagen */
 void pintaI(Mat im, char ventana[]) {
 	namedWindow(ventana, 1);
@@ -700,10 +704,13 @@ void AplicarFiltroGaussiano(vector<Mat> imagenes_color_recortadas){
 	cout << "\n-------------------------> Aplicando filtro gaussiano: " << endl;
 	vector<Mat> imagenes_gaussianas;
 	for (int i = 0; i < imagenes_color_recortadas.size(); i++){
+		cout << " " << i;
 		Mat imgaus5 = frecuenciaAlta(imagenes_color_recortadas[i], 3.0);
 		imagenes_gaussianas.push_back(imgaus5);
 		if (pintar_imagenes) pintaI(imagenes_gaussianas[i], " Filtro Gaussiano");
+		otropintaI(imagenes_gaussianas[i], "Filtro ", i);
 	}
+	cout << endl;
 }
 
 //5. Segundo buscador de ojos
@@ -726,7 +733,7 @@ int main(){
 	vector<Mat> imagenes_caras;
 
 	//Leemos las imágenes sacadas de una base de datos
-	numero_imagenes = 15;
+	numero_imagenes = 452;
 	nombre_imagenes = "imagenes/image_000";
 	cout << "-------------------------> Leyendo imagenes: " << endl;
 	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
@@ -746,10 +753,10 @@ int main(){
 	//BuscarOjos3(salida);
 
 	//4. Filtro Gaussiano
-	//AplicarFiltroGaussiano(imagenes_color_recortadas);
+	AplicarFiltroGaussiano(imagenes_color_recortadas);
 	
 	//5 Segundo buscador de ojos
-	SegundoBuscadorDeOjos(imagenes_recortadas, imagenes_color_recortadas);
+	//SegundoBuscadorDeOjos(imagenes_recortadas, imagenes_color_recortadas);
 
 	cout << endl << endl;
 	system("pause");
