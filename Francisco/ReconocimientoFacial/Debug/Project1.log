@@ -1,4 +1,4 @@
-﻿Compilación iniciada a las 3/2/16 13:39:54.
+﻿Compilación iniciada a las 3/2/16 13:59:02.
      1>Proyecto "\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Project1.vcxproj" en el nodo 2 (Build destinos).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
@@ -23,15 +23,18 @@
      1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(448): warning C4018: '<' : no coinciden signed/unsigned
      1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(477): warning C4018: '<' : no coinciden signed/unsigned
      1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(485): warning C4018: '<' : no coinciden signed/unsigned
-     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(625): warning C4018: '<' : no coinciden signed/unsigned
-     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(667): warning C4018: '<' : no coinciden signed/unsigned
-     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(682): warning C4018: '<' : no coinciden signed/unsigned
-     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(692): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(616): warning C4552: '+' : el operador no tiene efecto; se esperaba un operador con efecto secundario
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(617): warning C4552: '-' : el operador no tiene efecto; se esperaba un operador con efecto secundario
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(645): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(687): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(702): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(713): warning C4018: '<' : no coinciden signed/unsigned
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\opencv\build\x86\vc12\lib opencv_ts300d.lib opencv_world300d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.lib" /MACHINE:X86 Debug\main.obj
+         LINK : no se encontró \\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.exe o no lo generó el último vínculo incremental; ejecutando vínculo completo
          Project1.vcxproj -> \\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.exe
      1>Compilación del proyecto terminada "\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Project1.vcxproj" (Build destinos).
 
 Compilación correcta.
 
-Tiempo transcurrido 00:00:02.09
+Tiempo transcurrido 00:00:02.51

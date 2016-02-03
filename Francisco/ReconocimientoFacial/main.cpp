@@ -593,14 +593,34 @@ Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor, bool &encontrado){
 	return aux;
 }
 
-Mat HastaEncontrarOjos(Mat piel_b_n, Mat original_recor){
+Mat HastaEncontrarOjos(Mat piel_b_n, Mat original_recor, int &ojos_encontrados){
 	bool encontrado = false;
 	Mat ojos = BuscaOjosCris(piel_b_n, original_recor, encontrado);
 	if (!encontrado){
+		Mat recortada_b_n;
+		Mat recortada_orig;
+		piel_b_n.copyTo(recortada_b_n);
+		original_recor.copyTo(recortada_orig);
 		cout << "estoy en el nuevo metodo. No he encontrado " << endl;
 		//Recorto imagen por la izquierda y la derecha unos 10 píxeles.
+		int colum = piel_b_n.cols;
+		int primera_colum = 10;
+		int ultima_colum = colum - 10;
+		int contador_while = 0;
+		while (contador_while < 5 && !encontrado){
+			if ((primera_colum < colum) && (ultima_colum > 0)){
+				recortada_b_n = RecortarImagen(piel_b_n, 0, piel_b_n.rows, primera_colum, ultima_colum);
+				recortada_orig = RecortarImagen(original_recor, 0, piel_b_n.rows, primera_colum, ultima_colum);
+				ojos = BuscaOjosCris(recortada_b_n, recortada_orig, encontrado);
+				contador_while++;
+				primera_colum + 10;
+				ultima_colum - 10;
+			}
+		}
 
 	}
+	if (encontrado)
+		ojos_encontrados++;
 	return ojos;
 }
 
@@ -689,10 +709,14 @@ void AplicarFiltroGaussiano(vector<Mat> imagenes_color_recortadas){
 //5. Segundo buscador de ojos
 void SegundoBuscadorDeOjos(vector<Mat> imagenes_recortadas, vector<Mat> imagenes_color_recortadas){
 	cout << "\n-------------------------> CRIS:Reconocer ojos: " << endl;
+	int ojos_encontrados = 0;
 	for (int i = 0; i < imagenes_recortadas.size(); i++){
-		Mat ojos = HastaEncontrarOjos(imagenes_recortadas[i], imagenes_color_recortadas[i]);
+		Mat ojos = HastaEncontrarOjos(imagenes_recortadas[i], imagenes_color_recortadas[i], ojos_encontrados);
 		if (pintar_imagenes) pintaI(ojos, "Segundo Buscador de ojos");
 	}
+	double porcentaje = (ojos_encontrados / (imagenes_recortadas.size()*1.0)) * 100;
+	cout << "Se han encontrado: " << ojos_encontrados << " ojos de " << imagenes_recortadas.size() << " ,un porcentaje de: " << porcentaje << "%" << endl;
+
 }
 
 int main(){
@@ -702,7 +726,7 @@ int main(){
 	vector<Mat> imagenes_caras;
 
 	//Leemos las imágenes sacadas de una base de datos
-	numero_imagenes = 452;
+	numero_imagenes = 15;
 	nombre_imagenes = "imagenes/image_000";
 	cout << "-------------------------> Leyendo imagenes: " << endl;
 	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
@@ -717,7 +741,7 @@ int main(){
 	SacarPielYRecortarPiel(imagenes_caras, imagenes_recortadas, imagenes_color_recortadas);
 
 	//3.3 Vamos a pasar a aplicar el primer buscar de ojos que hemos realizado
-	PrimerBuscadorDeOjos(imagenes_recortadas);
+	//PrimerBuscadorDeOjos(imagenes_recortadas);
 
 	//BuscarOjos3(salida);
 
@@ -725,7 +749,7 @@ int main(){
 	//AplicarFiltroGaussiano(imagenes_color_recortadas);
 	
 	//5 Segundo buscador de ojos
-	//SegundoBuscadorDeOjos(imagenes_recortadas, imagenes_color_recortadas);
+	SegundoBuscadorDeOjos(imagenes_recortadas, imagenes_color_recortadas);
 
 	cout << endl << endl;
 	system("pause");
