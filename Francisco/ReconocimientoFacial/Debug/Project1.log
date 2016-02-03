@@ -1,4 +1,4 @@
-﻿Compilación iniciada a las 3/2/16 21:38:53.
+﻿Compilación iniciada a las 3/2/16 22:33:02.
      1>Proyecto "\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Project1.vcxproj" en el nodo 2 (Build destinos).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
@@ -34,4 +34,4 @@
 
 Compilación correcta.
 
-Tiempo transcurrido 00:00:01.80
+Tiempo transcurrido 00:00:04.87
