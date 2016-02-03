@@ -14,7 +14,7 @@
 using namespace std;
 using namespace cv;
 
-bool pintar_imagenes = true;
+bool pintar_imagenes = false;
 
 /*************************************************/
 /*************** Funciones auxiliares ************/
@@ -702,7 +702,6 @@ void PrimerBuscadorDeOjos(vector<Mat> imagenes_recortadas){
 		cout << " " << i;
 		BuscarOjos(imagenes_recortadas[i], contador_ojos_no_reconocidos, imagenes_ojos_identificados, imagenes_ojos_no_identificados);
 	}
-	PintaImagenes(imagenes_ojos_no_identificados, "", true);
 	double porcentaje = (contador_ojos_no_reconocidos / (imagenes_recortadas.size()*1.0)) * 100;
 	cout << "\n\nNo se han reconocido ojos en " << contador_ojos_no_reconocidos << " imagenes de " <<
 		imagenes_recortadas.size() << " ,un porcentaje de: " << porcentaje << "% de fallos" << endl;
