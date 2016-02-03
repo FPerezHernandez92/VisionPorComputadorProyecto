@@ -556,7 +556,8 @@ Mat BuscaOjosCris(Mat imagen_cara, Mat piel_b_n, Mat original_recor, bool &encon
 			if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_bueno){ //hay zona blanca ojo
 				es_bueno = true;
 				encontrado = true;
-				line(imagen_cara, Point(col_recortadas_izquierda, fil + filas_recortadas_arriba), Point(col_recortadas_izquierda+aux.cols, fil + filas_recortadas_arriba), CV_RGB(0, 0, 255));
+				line(imagen_cara, Point(col_recortadas_izquierda, fil + filas_recortadas_arriba), Point(col_recortadas_izquierda+aux.cols, fil + filas_recortadas_arriba), CV_RGB(0, 0, 255),2);
+				rectangle(imagen_cara, Point(col_recortadas_izquierda, filas_recortadas_arriba), Point(col_recortadas_izquierda + aux.cols,filas_recortadas_arriba+aux.rows ), CV_RGB(255, 0, 0),3);
 				line(aux, Point(0, fil), Point(aux.cols, fil), CV_RGB(0, 0, 255));
 			}
 		}
@@ -581,7 +582,8 @@ Mat BuscaOjosCris(Mat imagen_cara, Mat piel_b_n, Mat original_recor, bool &encon
 				if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_buenoabajo){ //hay zona blanca ojo
 					es_buenoabajo = true;
 					encontrado = true;
-					line(imagen_cara, Point(col_recortadas_izquierda, fil + filas_recortadas_arriba), Point(col_recortadas_izquierda + aux.cols, fil + filas_recortadas_arriba), CV_RGB(0, 0, 255));
+					line(imagen_cara, Point(col_recortadas_izquierda, fil + filas_recortadas_arriba), Point(col_recortadas_izquierda + aux.cols, fil + filas_recortadas_arriba), CV_RGB(0, 0, 255),2);
+					rectangle(imagen_cara, Point(col_recortadas_izquierda, filas_recortadas_arriba), Point(col_recortadas_izquierda + aux.cols, filas_recortadas_arriba + aux.rows), CV_RGB(0, 255, 0),3);
 					line(aux, Point(0, fil), Point(aux.cols, fil), CV_RGB(0, 0, 255));
 				}
 			}
@@ -617,6 +619,8 @@ Mat HastaEncontrarOjos(Mat imagen_cara, Mat piel_b_n, Mat original_recor, int &o
 				primera_colum + 10;
 				ultima_colum - 10;
 			}
+			else
+				contador_while = 10;
 		}
 
 	}
@@ -734,7 +738,7 @@ int main(){
 	vector<Mat> imagenes_caras;
 
 	//Leemos las imágenes sacadas de una base de datos
-	numero_imagenes = 90;
+	numero_imagenes = 9;
 	nombre_imagenes = "imagenes/image_000";
 	cout << "-------------------------> Leyendo imagenes: " << endl;
 	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
