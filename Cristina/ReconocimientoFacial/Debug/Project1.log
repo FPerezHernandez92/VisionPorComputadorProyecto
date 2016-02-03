@@ -1,4 +1,4 @@
-﻿Compilación iniciada a las 03/02/2016 10:57:47.
+﻿Compilación iniciada a las 03/02/2016 12:16:34.
      1>Proyecto "C:\Users\Cris\Documents\GitHub\Vision_Por_Computador\Cristina\ReconocimientoFacial\Project1.vcxproj" en el nodo 2 (Build destinos).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
@@ -25,4 +25,4 @@
 
 Compilación correcta.
 
-Tiempo transcurrido 00:00:01.76
+Tiempo transcurrido 00:00:01.41

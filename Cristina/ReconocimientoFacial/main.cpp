@@ -425,7 +425,7 @@ bool PareceBlancoOjoRGB(Mat im, int coor_x, int coor_y){
 }
 
 //Le paso la imagen de piel 
-Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor){
+Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor, bool &encontrado){
 	Mat aux = piel_b_n;
 	for (int i = 0; i < piel_b_n.rows; i++){
 		for (int j = 0; j < piel_b_n.cols; j++){
@@ -466,6 +466,7 @@ Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor){
 		for (int l = col - 10; (l < col + 10) && (0<l) && (l<aux.cols); l++){
 			if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_bueno){ //hay zona blanca ojo
 				es_bueno = true;
+				encontrado = true;
 				line(aux, Point(0, fil), Point(aux.cols, fil), CV_RGB(0, 0, 255));
 			}
 		}
@@ -491,6 +492,7 @@ Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor){
 			for (int l = col - 10; (l < col + 10) && (0 < l) && (l < aux.cols); l++){
 				if (aux.at<Vec3b>(k, l) == Vec3b(10, 100, 10) && !es_buenoabajo){ //hay zona blanca ojo
 					es_buenoabajo = true;
+					encontrado = true;
 					line(aux, Point(0, fil), Point(aux.cols, fil), CV_RGB(0, 0, 255));
 				}
 			}
@@ -502,6 +504,16 @@ Mat BuscaOjosCris(Mat piel_b_n, Mat original_recor){
 	return aux;
 }
 
+Mat HastaEncontrarOjos(Mat piel_b_n, Mat original_recor){
+	bool encontrado = false;
+	Mat ojos = BuscaOjosCris(piel_b_n, original_recor, encontrado);
+	if (!encontrado){
+		cout << "estoy en el nuevo metodo. No he encontrado " << endl;
+		//Recorto imagen por la izquierda y la derecha unos 10 píxeles.
+
+	}
+	return ojos;
+}
 
 int main(){
 	//Leemos las imágenes que vamos a usar para las pruebas
@@ -560,7 +572,7 @@ int main(){
 			imagenes_recortadas.push_back(recortada);
 			//pintaI(imagenes_recortadas[contador], "recortada orgi");
 
-			Mat ojos = BuscaOjosCris(salida, recortada);
+			Mat ojos = HastaEncontrarOjos(salida, recortada);
 			pintaI(ojos, "ojitos");
 
 			//pintaI(imagenes_recortadas[contador], "recortada orgi");
