@@ -646,11 +646,12 @@ void PasarDeColorCarneABlancoNegro(int tolerancia, int numero_imagenes, vector<M
 	imagenes_sin_color_carne.clear();
 }
 
+
 //3.1 y 3.2 Vamos a sacar la piel de las imagenes y a recortar la piel
 void SacarPielYRecortarPiel(vector<Mat> imagenes_caras, vector<Mat> &imagenes_caras_buenas,
 	vector<Mat> &imagenes_recortadas, vector<Mat> &imagenes_color_recortadas,
 	vector<int> &filas_recortadas_arriba/*primero_filas*/,
-	vector<int> &col_recortadas_izquierda /*primero_col*/){
+	vector<int> &col_recortadas_izquierda /*primero_col*/, vector<Mat> &imagenes_malas){
 	//3.1 Sacar piel
 	vector<Mat> imagenes_caras_malas;
 	int primero_filas = 0, ultimo_filas = 0, primero_col = 0, ultimo_col = 0, contadormalas = 0, contador = 0;
@@ -687,6 +688,7 @@ void SacarPielYRecortarPiel(vector<Mat> imagenes_caras, vector<Mat> &imagenes_ca
 			if (pintar_imagenes) pintaI(aux, "No se reconoce la cara.");
 			imagenes_caras_malas.push_back(aux);
 			contadormalas++;
+			imagenes_malas.push_back(imagenes_caras[i]);
 		}
 	}
 
@@ -915,9 +917,19 @@ int main(){
 
 	//3. Sacar piel de las imágenes
 	//3.1 y 3.2 Sacar piel y recortar piel
-	//vector<int> filas_recortadas_arriba, col_recortadas_izquierda;
-	//vector<Mat> imagenes_recortadas, imagenes_color_recortadas, imagenes_caras_buenas;
-	//SacarPielYRecortarPiel(imagenes_caras, imagenes_caras_buenas, imagenes_recortadas, imagenes_color_recortadas, filas_recortadas_arriba, col_recortadas_izquierda);
+	vector<int> filas_recortadas_arriba, col_recortadas_izquierda;
+	vector<Mat> imagenes_recortadas, imagenes_color_recortadas, imagenes_caras_buenas, imagenes_malas;
+
+	SacarPielYRecortarPiel(imagenes_caras, imagenes_caras_buenas, imagenes_recortadas, imagenes_color_recortadas, filas_recortadas_arriba, col_recortadas_izquierda, imagenes_malas);
+
+	//Meto en un vector las imagenes que no han sido reconocidas (en b/n-->1canal)
+	vector<Mat> imagenes_malas_bn;
+	for (int i = 0; i < imagenes_malas.size(); i++){
+		Mat aux;
+		imagenes_malas[i].copyTo(aux);
+		cvtColor(imagenes_malas[i], aux, CV_BGR2GRAY);
+		imagenes_malas_bn.push_back(aux);
+	}
 
 	//3.3 Vamos a pasar a aplicar el primer buscar de ojos que hemos realizado
 	//PrimerBuscadorDeOjos(imagenes_recortadas);
