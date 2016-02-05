@@ -12,7 +12,7 @@ using namespace cv;
 //Creamos la función exponencial.
 double funcionGaussiana(int x, double sigma) {
 	double producto = (pow(2, x) / pow(2, sigma));
-	return exp(-0.5*producto);
+	return x*exp(-0.5*producto);
 }
 
 //Creamos el vector máscara.
