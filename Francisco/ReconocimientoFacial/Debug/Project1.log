@@ -1,4 +1,4 @@
-﻿Compilación iniciada a las 3/2/16 23:38:54.
+﻿Compilación iniciada a las 5/2/16 16:22:35.
      1>Proyecto "\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Project1.vcxproj" en el nodo 2 (Build destinos).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
@@ -24,9 +24,11 @@
      1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(483): warning C4018: '<' : no coinciden signed/unsigned
      1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(491): warning C4018: '<' : no coinciden signed/unsigned
      1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(660): warning C4018: '<' : no coinciden signed/unsigned
-     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(705): warning C4018: '<' : no coinciden signed/unsigned
-     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(721): warning C4018: '<' : no coinciden signed/unsigned
-     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(736): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(706): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(722): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(737): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(840): warning C4018: '<' : no coinciden signed/unsigned
+     1>\\mac\dropbox\z4 cuarto\gitmac\vision_por_computador\francisco\reconocimientofacial\main.cpp(864): warning C4018: '<' : no coinciden signed/unsigned
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\opencv\build\x86\vc12\lib opencv_ts300d.lib opencv_world300d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"\\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.lib" /MACHINE:X86 Debug\main.obj
          Project1.vcxproj -> \\Mac\Dropbox\z4 Cuarto\GITMac\Vision_Por_Computador\Francisco\ReconocimientoFacial\Debug\Project1.exe
@@ -34,4 +36,4 @@
 
 Compilación correcta.
 
-Tiempo transcurrido 00:00:03.79
+Tiempo transcurrido 00:00:02.65
