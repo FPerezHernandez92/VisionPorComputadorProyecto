@@ -870,6 +870,32 @@ void SacarOjosAPartirDeFiltroGaussianoSegundo(vector<Mat> imagenes){
 	cout << endl;
 }
 
+int BuenasOpenCV(vector<Mat> imagenes_caras){
+	// Load Face cascade (.xml file)
+	CascadeClassifier face_cascade;
+	face_cascade.load("haarcascade_frontalface_alt.xml");
+
+	// Detect faces
+	std::vector<Rect> faces;
+	int contador_supuestas_buenas = 0;
+	for (int i = 0; i < imagenes_caras.size(); i++){
+		face_cascade.detectMultiScale(imagenes_caras[i], faces, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30));
+		Mat auxi;
+		imagenes_caras[i].copyTo(auxi);
+		// Draw circles on the detected faces
+		for (int i = 0; i < faces.size(); i++){
+			Point center(faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5);
+			ellipse(auxi, center, Size(faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar(255, 0, 255), 4, 8, 0);
+		}
+		if (pintar_imagenes) pintaI(auxi, "cara");
+		if (faces.size() == 1){
+			contador_supuestas_buenas++;
+		}
+
+	}
+	return contador_supuestas_buenas;
+}
+
 
 int main(){
 	//Leemos las imágenes que vamos a usar para las pruebas
@@ -878,7 +904,7 @@ int main(){
 	vector<Mat> imagenes_caras;
 
 	//Leemos las imágenes sacadas de una base de datos
-	numero_imagenes = 450;
+	numero_imagenes = 20;
 	nombre_imagenes = "imagenes/image_000";
 	cout << "-------------------------> 1 Leyendo imagenes: " << endl;
 	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
@@ -922,30 +948,7 @@ int main(){
 	SacarOjosAPartirDeFiltroGaussianoSegundo(imagenes_caras);*/
 
 	//7- Usando OpenCV
-
-	// Load Face cascade (.xml file)
-	CascadeClassifier face_cascade;
-	face_cascade.load("haarcascade_frontalface_alt.xml");
-
-	// Detect faces
-	std::vector<Rect> faces;
-	int contador_supuestas_buenas = 0;
-	for (int i = 0; i < imagenes_caras.size(); i++){
-		face_cascade.detectMultiScale(imagenes_caras[i], faces, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, Size(30, 30));
-		Mat auxi;
-		imagenes_caras[i].copyTo(auxi);
-		// Draw circles on the detected faces
-		for (int i = 0; i < faces.size(); i++){
-			Point center(faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5);
-			ellipse(auxi, center, Size(faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar(255, 0, 255), 4, 8, 0);
-		}
-		if (pintar_imagenes) pintaI(auxi, "cara");
-		if (faces.size() == 1){
-			contador_supuestas_buenas++;
-		}
-
-	}
-
+	int contador_supuestas_buenas = BuenasOpenCV(imagenes_caras);
 	double porcentaje = (contador_supuestas_buenas * 100) / (imagenes_caras.size());
 	cout << "Buenas de OpenCV: " << contador_supuestas_buenas << ", un porcentaje de: " << porcentaje << "%" <<  endl;
 
