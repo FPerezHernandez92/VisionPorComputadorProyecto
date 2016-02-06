@@ -900,6 +900,10 @@ int BuenasOpenCV(vector<Mat> imagenes_caras){
 
 
 int main(){
+	//SI DESEA NO VER TODAS LAS IMÁGENES DESCOMENTE LA SIGUIENTE LINEA
+	//pintar_imagenes = false;
+
+
 	//Leemos las imágenes que vamos a usar para las pruebas
 	int numero_imagenes, flag_color = CV_32FC3;
 	string nombre_imagenes;
