@@ -14,7 +14,7 @@
 using namespace std;
 using namespace cv;
 
-bool pintar_imagenes = false;
+bool pintar_imagenes = true;
 bool escribir_imagen = false;
 int cont = 0;
 
@@ -181,7 +181,7 @@ Mat RGBtoYCrCb(Mat im_original){
 Mat TransformarDeRGBaYCrCBYPasoABlancoNegro(Mat im, int valY, int minCr, int maxCr, int minCb, int maxCb){
 	//Paso de RGB a YCrCb
 	Mat salida = RGBtoYCrCb(im);
-	//	pintaI(salida, "YCrCb");
+	if (pintar_imagenes) pintaI(salida, "YCrCb");
 
 	//Pinto en blanco los niveles de piel y en negro no piel.
 	for (int i = 0; i < salida.rows; i++){
@@ -595,7 +595,7 @@ Mat BuscaOjos2(Mat imagen_cara, Mat piel_b_n, Mat original_recor, bool &encontra
 		}
 	}
 
-   //  pintaI(aux, "Segundo buscador de ojos");
+    if(pintar_imagenes)  pintaI(aux, "Segundo buscador de ojos");
 	if (escribir_imagen) otropintaI(aux, "SegundoBuscadorDeOjos", cont);
 	cont++;
 
@@ -650,7 +650,8 @@ void PasarDeColorCarneABlancoNegro(int tolerancia, int numero_imagenes, vector<M
 void SacarPielYRecortarPiel(vector<Mat> imagenes_caras, vector<Mat> &imagenes_caras_buenas,
 	vector<Mat> &imagenes_recortadas, vector<Mat> &imagenes_color_recortadas,
 	vector<int> &filas_recortadas_arriba/*primero_filas*/,
-	vector<int> &col_recortadas_izquierda /*primero_col*/, vector<Mat> &imagenes_malas){
+	vector<int> &col_recortadas_izquierda /*primero_col*/, vector<Mat> &imagenes_malas, 
+	int valY, int minCr, int maxCr, int minCb, int maxCb){
 	//3.1 Sacar piel
 	vector<Mat> imagenes_caras_malas;
 	int primero_filas = 0, ultimo_filas = 0, primero_col = 0, ultimo_col = 0, contadormalas = 0, contador = 0;
@@ -659,10 +660,9 @@ void SacarPielYRecortarPiel(vector<Mat> imagenes_caras, vector<Mat> &imagenes_ca
 	//Busco la zona cuadrada de piel en cada imagen 
 	for (int i = 0; i < imagenes_caras.size(); i++){
 		//Pasamos las imágenes de RGB a YCrCb y después a Blanco-Negro
-		if (i == 0) cout << "-------------------------> 3.1 y 3.2 Pasando de RGB a YCrCb y a Blanco-Negro: " << endl << "Total de imagenes: " << imagenes_caras.size() << endl;
 		cout << " " << i;
-		Mat aux = TransformarDeRGBaYCrCBYPasoABlancoNegro(imagenes_caras[i], 0, 110, 140, 140, 170);
-		//pintaI(aux, "YCrCb a blanco-negro");
+		Mat aux = TransformarDeRGBaYCrCBYPasoABlancoNegro(imagenes_caras[i], valY, minCr, maxCr, minCb, maxCb);
+		if(pintar_imagenes) pintaI(aux, "YCrCb a blanco-negro");
 		if (BuscarSiHayCara(aux)){
 			//3.2 Recortar piel
 			//Si hay cara pasamos a recortarla
@@ -670,20 +670,20 @@ void SacarPielYRecortarPiel(vector<Mat> imagenes_caras, vector<Mat> &imagenes_ca
 			salida = recortoCaraCOL(salida, primero_col, ultimo_col);
 			imagenes_recortadas.push_back(salida);
 
-			//pintaI(imagenes_recortadas[contador], "Recortada");
+			if(pintar_imagenes) pintaI(imagenes_recortadas[contador], "Recortada");
 
 			col_recortadas_izquierda.push_back(primero_col);
 			filas_recortadas_arriba.push_back(primero_filas);
 			Mat color_recortada = RecortarImagen(imagenes_caras[i], primero_filas, ultimo_filas, primero_col, ultimo_col);
 			imagenes_color_recortadas.push_back(color_recortada);
-		    //pintaI(color_recortada, "ColorRecortada");
+		    if(pintar_imagenes) pintaI(color_recortada, "ColorRecortada");
 			imagenes_caras_buenas.push_back(imagenes_caras[i]);
 			contador++;
 		}
 		else{
 			Mat malas = imagenes_caras[i];
 			cout << " (" << i << " No cara)";
-		   // pintaI(aux, "No se reconoce la cara.");
+		    if(pintar_imagenes) pintaI(aux, "No se reconoce la cara.");
 			imagenes_caras_malas.push_back(aux);
 			contadormalas++;
 			imagenes_malas.push_back(imagenes_caras[i]);
@@ -720,9 +720,9 @@ void AplicarFiltroGaussiano(vector<Mat> imagenes_color_recortadas){
 	cout << "Total de imagenes: " << imagenes_color_recortadas.size() << endl;
 	for (int i = 0; i < imagenes_color_recortadas.size(); i++){
 		cout << " " << i;
-		Mat imgaus5 = frecuenciaBaja(imagenes_color_recortadas[i], 3.0);
+		Mat imgaus5 = frecuenciaAlta(imagenes_color_recortadas[i], 3.0);
 		imagenes_gaussianas.push_back(imgaus5);
-	    pintaI(imagenes_gaussianas[i], " Filtro Gaussiano");
+	    if(pintar_imagenes) pintaI(imagenes_gaussianas[i], " Filtro Gaussiano");
 	}
 	cout << endl;
 }
@@ -730,15 +730,17 @@ void AplicarFiltroGaussiano(vector<Mat> imagenes_color_recortadas){
 //5. Segundo buscador de ojos
 void SegundoBuscadorDeOjos(vector<Mat> imagenes_caras_buenas, vector<Mat> imagenes_recortadas, vector<Mat> imagenes_color_recortadas,
 	vector<int> filas_recortadas_arriba, vector<int> col_recortadas_izquierda){
-	cout << "\n-------------------------> 5 Segundo Reconocedor de ojos: " << endl;
 	int ojos_encontrados = 0;
 	cout << "Total de imagenes: " << imagenes_recortadas.size() << endl;
 	for (int i = 0; i < imagenes_recortadas.size(); i++){
 		cout << " " << i;
-		Mat ojos = HastaEncontrarOjos(imagenes_caras_buenas[i], imagenes_recortadas[i], imagenes_color_recortadas[i], ojos_encontrados,
+		Mat ojos;
+		imagenes_caras_buenas[i].copyTo(ojos);
+		ojos = HastaEncontrarOjos(ojos, imagenes_recortadas[i], imagenes_color_recortadas[i], ojos_encontrados,
 			filas_recortadas_arriba[i], col_recortadas_izquierda[i]);
-	    pintaI(ojos, "Final");
-		if(escribir_imagen) otropintaI(ojos, "Final", i);
+	    if(pintar_imagenes) pintaI(ojos, "Final");
+		if(escribir_imagen)
+			otropintaI(ojos, "Final", i);
 	}
 	double porcentaje = (ojos_encontrados / (imagenes_recortadas.size()*1.0)) * 100;
 	cout << "\n\nSe han encontrado: " << ojos_encontrados << " ojos de " << imagenes_recortadas.size() << " ,un porcentaje de: " << porcentaje << "% de acierto" << endl;
@@ -833,7 +835,7 @@ Mat QuintoBuscadorDeOjos(Mat mascara, Mat im){
 
 //6. Sacar ojos a partir de filtro Gaussiano
 void SacarOjosAPartirDeFiltroGaussianoPrimero(vector<Mat> imagenes){
-	cout << "-------------------------> 6 Aplicando filtro gaussiano: " << endl;
+	cout << "-------------------------> 8.1 Aplicando filtro gaussiano: " << endl;
 	vector<Mat> imagenes_gaussianas;
 	cout << "Total de imagenes: " << imagenes.size() << endl;
 	for (int i = 0; i < imagenes.size(); i++){
@@ -842,14 +844,14 @@ void SacarOjosAPartirDeFiltroGaussianoPrimero(vector<Mat> imagenes){
 		Mat aux = PasandoB_N(imgaus5);
 		int dimx = 160, dimy = 30, divi = 55;
 		aux = CuartoBuscadorDeOjos(aux, dimx, dimy, divi);
-		pintaI(aux, "4 Buscador");
+		if(pintar_imagenes) pintaI(aux, "4 Buscador");
 	}
 	cout << endl;
 }
 
 //7. Sacar ojos a partir de filtro Gaussiano
 void SacarOjosAPartirDeFiltroGaussianoSegundo(vector<Mat> imagenes){
-	cout << "\n-------------------------> 7 Aplicando filtro gaussiano: " << endl;
+	cout << "\n-------------------------> 8.2 Aplicando filtro gaussiano: " << endl;
 	vector<Mat> imagenes_gaussianas;
 
 	cout << "Tratando la primera imagen" << endl;
@@ -865,7 +867,7 @@ void SacarOjosAPartirDeFiltroGaussianoSegundo(vector<Mat> imagenes){
 		Mat imgaus5 = frecuenciaAlta(imagenes[i], 5.0);
 		Mat aux2 = PasandoB_N(imgaus5);
 		Mat salida = QuintoBuscadorDeOjos(aux, aux2);
-		pintaI(salida, "5 Buscador");
+		if(pintar_imagenes) pintaI(salida, "5 Buscador");
 	}
 	cout << endl;
 }
@@ -887,7 +889,7 @@ int BuenasOpenCV(vector<Mat> imagenes_caras){
 			Point center(faces[i].x + faces[i].width*0.5, faces[i].y + faces[i].height*0.5);
 			ellipse(auxi, center, Size(faces[i].width*0.5, faces[i].height*0.5), 0, 0, 360, Scalar(255, 0, 255), 4, 8, 0);
 		}
-		pintaI(auxi, "cara");
+		if(pintar_imagenes) pintaI(auxi, "OpenCV");
 		if (faces.size() == 1){
 			contador_supuestas_buenas++;
 		}
@@ -904,67 +906,74 @@ int main(){
 	vector<Mat> imagenes_caras;
 
 	//Leemos las imágenes sacadas de una base de datos
-	numero_imagenes = 195;
-	nombre_imagenes = "imagenes_malas/image_000";
+	numero_imagenes = 20;
+	nombre_imagenes = "imagenes/image_000";
 	cout << "-------------------------> 1 Leyendo imagenes: " << endl;
 	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
 
+
 	//2. Pasar de Color Carne a Blanco-Negro
-	//int tolerancia = 70;
-	//PasarDeColorCarneABlancoNegro(tolerancia, numero_imagenes, imagenes_caras);
+	int tolerancia = 70;
+	PasarDeColorCarneABlancoNegro(tolerancia, numero_imagenes, imagenes_caras);
+
 
 	//3. Sacar piel de las imágenes
 	//3.1 y 3.2 Sacar piel y recortar piel
 	vector<int> filas_recortadas_arriba, col_recortadas_izquierda;
 	vector<Mat> imagenes_recortadas, imagenes_color_recortadas, imagenes_caras_buenas, imagenes_malas;
-
-	SacarPielYRecortarPiel(imagenes_caras, imagenes_caras_buenas, imagenes_recortadas, imagenes_color_recortadas, filas_recortadas_arriba, col_recortadas_izquierda, imagenes_malas);
+	cout << "-------------------------> 3.1 y 3.2 Pasando de RGB a YCrCb y a Blanco-Negro: " << endl << "Total de imagenes: " << imagenes_caras.size() << endl;
+	SacarPielYRecortarPiel(imagenes_caras, imagenes_caras_buenas, imagenes_recortadas, imagenes_color_recortadas, filas_recortadas_arriba, col_recortadas_izquierda, imagenes_malas, 110, 80, 130, 145, 180);
 	
-	/*
-	//Meto en un vector las imagenes que no han sido reconocidas (en b/n-->1canal)
-	vector<Mat> imagenes_malas_bn;
-	for (int i = 0; i < imagenes_malas.size(); i++){
-		Mat aux;
-		imagenes_malas[i].copyTo(aux);
-		cvtColor(imagenes_malas[i], aux, CV_BGR2GRAY);
-		imagenes_malas_bn.push_back(aux);
-	}*/
-
 	//3.3 Vamos a pasar a aplicar el primer buscar de ojos que hemos realizado
-	//PrimerBuscadorDeOjos(imagenes_recortadas);
+	PrimerBuscadorDeOjos(imagenes_recortadas);
 
+	//Buscador de ojos que no ha llegado a funcionar bien
 	//BuscarOjos3(salida);
 
+
 	//4. Filtro Gaussiano
-	//AplicarFiltroGaussiano(imagenes_caras);
+	AplicarFiltroGaussiano(imagenes_color_recortadas);
 
 
 	//En imagenes_caras_buenas tengo las imagenes que se han reconocido como que tienen cara.
 	//El orden será el mismo que hay en imagenes_recortadas
 	//5. Segundo buscador de ojos
+	cout << "\n-------------------------> 5 Segundo Reconocedor de ojos: " << endl;
 	SegundoBuscadorDeOjos(imagenes_caras_buenas, imagenes_recortadas, imagenes_color_recortadas, filas_recortadas_arriba, col_recortadas_izquierda);
 
-	//6. Sacar ojos a partir del filtro gaussiano
-	/*
-	flag_color = 0;
-	numero_imagenes = 10;
-	nombre_imagenes = "imagenes/image_000";
-	cout << "\n-------------------------> 6 Leyendo imagenes blanco y negro \n" << endl;
-	imagenes_caras.clear();
-	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
 
-
-	SacarOjosAPartirDeFiltroGaussianoPrimero(imagenes_caras);
-
-	SacarOjosAPartirDeFiltroGaussianoSegundo(imagenes_caras);*/
+	//6. Vamos a darle una segunda vuelta a las imágenes que han dado fallos (imagenes_malas) 
+	vector<Mat> imagenes_malas2;
+	imagenes_caras_buenas.clear();
+	imagenes_recortadas.clear();
+	imagenes_color_recortadas.clear();
+	filas_recortadas_arriba.clear();
+	col_recortadas_izquierda.clear();
+	cout << "\n-------------------------> 6.1 Sacando ojos imagenes malas \n" << endl;
+	cout << "Total imagenes: " << imagenes_malas.size() << endl;
+	SacarPielYRecortarPiel(imagenes_malas, imagenes_caras_buenas, imagenes_recortadas, imagenes_color_recortadas, filas_recortadas_arriba, col_recortadas_izquierda, imagenes_malas2, 0, 110, 140, 140, 170);
+	cout << "\n-------------------------> 6.2 Segundo Reconocedor de ojos: " << endl;
+	SegundoBuscadorDeOjos(imagenes_caras_buenas, imagenes_recortadas, imagenes_color_recortadas, filas_recortadas_arriba, col_recortadas_izquierda);
+	
 
 	//7- Usando OpenCV
-	/*
+	cout << "\n-------------------------> 7 Reconocedor de OpenCV \n" << endl;
 	int contador_supuestas_buenas = BuenasOpenCV(imagenes_caras);
 	double porcentaje = (contador_supuestas_buenas * 100) / (imagenes_caras.size());
 	cout << "Buenas de OpenCV: " << contador_supuestas_buenas << ", un porcentaje de: " << porcentaje << "%" <<  endl;
-	
-	*/
+
+
+	//8. Sacar ojos a partir del filtro gaussiano
+	flag_color = 0;
+	numero_imagenes = 10;
+	nombre_imagenes = "imagenes/image_000";
+	cout << "\n-------------------------> 8 Leyendo imagenes blanco y negro \n" << endl;
+	imagenes_caras.clear();
+	imagenes_caras = LeerImagenes(numero_imagenes, nombre_imagenes, flag_color);
+
+	SacarOjosAPartirDeFiltroGaussianoPrimero(imagenes_caras);
+
+	SacarOjosAPartirDeFiltroGaussianoSegundo(imagenes_caras);
 
 
 	cout << endl << endl;
